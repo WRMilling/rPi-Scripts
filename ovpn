@@ -1,0 +1,69 @@
+#!/bin/sh
+OPENVPN=/usr/sbin/openvpn
+OVPNDEV="tun"
+PIDFILE=/var/run/openvpn.pid
+LOGFILE=/var/log/openvpn.log
+CONFILE=/usr/local/etc/.keys/ovpn.conf
+start()
+{
+   if [ ! -f ${OPENVPN} ]; then
+      /bin/echo "openvpn is not exit"
+      /bin/echo "`date` openvpn is not exit" >> ${LOGFILE}
+      exit 1
+   fi
+   if [ -f ${PIDFILE} ]; then
+      /bin/echo "openvpn is aleady running"
+      /bin/echo "`date` openvpn is aleady running" >> ${LOGFILE}
+      exit 1
+   fi
+   sleep 1
+   /bin/echo "`date` Attempting tp start ${OPENVPN}; using ${CONFILE}" >> ${LOGFILE}
+   ${OPENVPN} --daemon --writepid ${PIDFILE} --cd /usr/local/etc/.keys/ --config ${CONFILE} --log ${LOGFILE} --script-security 3
+   sleep 2
+   if [ -f ${PIDFILE} ]; then
+      PID=`/bin/cat ${PIDFILE}`
+      /bin/echo "vpn tunnel started with pid=${PID}"
+      /bin/echo "`date` vpn tunnel started with pid=${PID}" >> ${LOGFILE}
+   else
+      /bin/echo "vpn tunnel could not start properly"
+      exit 1
+   fi
+}
+
+stop()
+{
+   if [ -f ${PIDFILE} ]; then
+      PID=`/bin/cat ${PIDFILE}`
+      /bin/echo "vpn tunnel pid=${PID}"
+      /bin/echo "`date` vpn tunnel pid=${PID}" >> ${LOGFILE}
+      /bin/echo "Stopping vpn service..."
+      /bin/echo "`date` Stopping vpn service..." >> ${LOGFILE}
+      sleep 1
+      /bin/kill -9 `/bin/cat ${PIDFILE}` 1>>/dev/null 2>&1
+      sleep 1
+      /bin/echo "Removing pid file..."
+      rm -f ${PIDFILE}
+      /bin/echo "Removing tuntap device ${OVPNDEV}..."
+      /bin/ip tuntap del mode tun ${OVPNDEV}
+   else
+      /bin/echo "vpn tunnel is not running"
+   fi
+}
+
+case "$1" in
+   start)
+      start
+      ;;
+   stop)
+      stop
+      ;;
+   restart)
+      stop
+      /bin/sleep 2
+      start
+      ;;
+   *)
+      echo "Usage: /etc/init.d/$0 {start|stop}"
+      exit 1
+esac
+exit 0

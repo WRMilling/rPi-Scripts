@@ -1,0 +1,4 @@
+#!/bin/bash
+TSOCKS_CONF_FILE=/usr/local/etc/.tsocks.conf
+export TSOCKS_CONF_FILE
+exec tsocks "$@"

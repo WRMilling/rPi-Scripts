@@ -1,0 +1,2 @@
+#!/bin/sh
+omxplayer --win "683 20 1366 532" "$@"
