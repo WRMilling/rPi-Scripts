@@ -5,8 +5,20 @@ cpuTemp2=$(($cpuTemp0/100))
 cpuTempM=$(($cpuTemp2 % $cpuTemp1))
 
 cpuSpeed0=$(sudo cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq)
-cpuSpeed1=$(($cpuSpeed0/1000))
+cpuSpeed0Display=$(($cpuSpeed0/1000))
 
-echo CPU Speed"="$cpuSpeed1 Mhz
+cpuSpeed1=$(sudo cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq)
+cpuSpeed1Display=$(($cpuSpeed1/1000))
+
+cpuSpeed2=$(sudo cat /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq)
+cpuSpeed2Display=$(($cpuSpeed2/1000))
+
+cpuSpeed3=$(sudo cat /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_cur_freq)
+cpuSpeed3Display=$(($cpuSpeed3/1000))
+
+echo CPU0 Speed"="$cpuSpeed0Display Mhz
+echo CPU1 Speed"="$cpuSpeed1Display Mhz
+echo CPU2 Speed"="$cpuSpeed2Display Mhz
+echo CPU3 Speed"="$cpuSpeed3Display Mhz
 echo CPU Temp"="$cpuTemp1"."$cpuTempM"'C"
 echo GPU $(/opt/vc/bin/vcgencmd measure_temp)
