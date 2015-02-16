@@ -1,0 +1,5 @@
+sudo netctl start wlan0-PublicWiFi
+sudo ovpn start
+screen -S irssi -d -m irssi 
+screen -S mopidy -d -m mopidy
+startx
